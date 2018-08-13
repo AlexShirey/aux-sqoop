@@ -1,0 +1,68 @@
+
+Steps to run the app:
+
+1. Create (or modify existing ./sql/init-sql-tables.sql) query and save it to the .sql file:
+
+	CREATE DATABASE [IF NOT EXISTS] db_name ...; 
+		- switch to it
+	CREATE TABLE [IF NOT EXISTS] table_name ...; 
+		- it will be used to populate the data in
+		- its possible to use PRIMARY KEY in this table, it will speed up queries in future, but slow down total time to execute the job;
+	CREATE TABLE [IF NOT EXISTS] staging-table-name ...;
+		- the same format as previous table, for staging
+		- without staging it is possible that a failed export job may result in partial data being committed to the database;
+		- don’t use PRIMARY KEY in staging table, data transfer rate will be approximately two times lower with it then without;
+		- note, sqoop doesn’t support --direct flag with staging, so in this task this option is disabled (with --direct flag we can get approximately two times higher transfer rate).
+
+2. Modify file ./etc/app.config with next structure:
+
+	--connect 
+	<jdbc-uri/> e.g. jdbc:mysql://localhost/db_name
+
+	--username
+	 <username>
+
+	--password
+	<password>
+
+	--table
+	<table-name>
+
+	--staging-table
+	 <staging-table-name>
+
+where you should specify values from #1 (sqoop will use them!);
+
+4. Run .sh script to export the data to MySQL table:
+
+	$> bash export.sh data_dir num_mappers [sql_file] [sql_username]
+
+where 
+	data_dir - path to the dir with data to be populated,
+	num_mappers - number of mappers (for current task the optimal number of mappers is 8),
+	[sql_file] - sql file with query (see #1) if you wish to execute it in mysql shell before exporting,
+	[sql_username] - username to access mysql shell.
+
+and wait for complition.
+
+execute.sh script will do:
+ 	- put local data to HDFS temporary dir;
+	- run sqoop with listed configuration, wait for the map job to be completed;
+	- delete HDFS temporary dir.
+
+5. Check if the job was succeeded and the data populated to MySQL table without errors:
+
+	$> mysql -u username -p
+	mysql> USE db_name;
+	mysql> SHOW * FROM table_name LIMIT 10;
+
+
+	
+
+
+
+	
+
+
+
+
