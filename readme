@@ -1,4 +1,16 @@
+Tasks:
+Sqoop:
 
+Upload the weather data into your HDP sandbox's HDFS (Use the weather table dataset described here
+
+Use sqoop to export all the data to MySQL (normally the credentials are root / hadoop. For more details and for specific version please refer to
+https://hortonworks.com/tutorial/learning-the-ropes-of-the-hortonworks-sandbox/#login-credentials )
+Include a screenshot in your report with the result of the following queries run in MySQL:
+
+    SELECT count(*) FROM weather;
+    SELECT * FROM weather ORDER BY stationid, date LIMIT 10;
+    
+    
 Steps to run the app:
 
 1. Create (or modify existing ./sql/init-sql-tables.sql) query and save it to the .sql file:
@@ -11,8 +23,8 @@ Steps to run the app:
 	CREATE TABLE [IF NOT EXISTS] staging-table-name ...;
 		- the same format as previous table, for staging
 		- without staging it is possible that a failed export job may result in partial data being committed to the database;
-		- don’t use PRIMARY KEY in staging table, data transfer rate will be approximately two times lower with it then without;
-		- note, sqoop doesn’t support --direct flag with staging, so in this task this option is disabled (with --direct flag we can get approximately two times higher transfer rate).
+		- donâ€™t use PRIMARY KEY in staging table, data transfer rate will be approximately two times lower with it then without;
+		- note, sqoop doesnâ€™t support --direct flag with staging, so in this task this option is disabled (with --direct flag we can get approximately two times higher transfer rate).
 
 2. Modify file ./etc/app.config with next structure:
 
